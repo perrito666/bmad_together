@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load bmad_extras %}
+{% block title %}Story {{ story.label }} · bmad_together{% endblock %}
+{% block content %}
+  <div class="crumbs">
+    <a href="{% url 'web:dashboard' %}">Dashboard</a> /
+    <a href="{% url 'web:project_detail' story.epic.project.id %}">{{ story.epic.project.name }}</a> /
+    <a href="{% url 'web:board' story.epic.project.id %}">board</a> / {{ story.label }}
+  </div>
+  <div class="row">
+    <h1 style="margin:0">{{ story.label }} — {{ story.title }}</h1>
+    <span class="badge {{ story.status|status_class }}">{{ story.get_status_display }}</span>
+  </div>
+  <p class="muted">Epic {{ story.epic.number }}: {{ story.epic.title }}
+    {% if story.assignee %}· assigned to {{ story.assignee.username }}{% endif %}</p>
+
+  {% if can_write and allowed_targets %}
+    <div class="row" style="margin-bottom:10px">
+      <span class="muted">Move to:</span>
+      {% for t in allowed_targets %}
+        <form method="post" action="{% url 'web:story_transition' story.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="to" value="{{ t }}">
+          <button>{{ t|cut:"_"|title }}</button>
+        </form>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if story.body %}<div class="markdown card">{{ story.body|render_markdown }}</div>{% endif %}
+
+  <h2>Acceptance criteria</h2>
+  {% if story.acceptance_criteria %}
+    <ul>{% for ac in story.acceptance_criteria %}
+      <li>{% if ac.id %}<strong>{{ ac.id }}</strong>: {% endif %}{{ ac.text|default:ac }}</li>
+    {% endfor %}</ul>
+  {% else %}<p class="muted">None recorded.</p>{% endif %}
+
+  <h2>Tasks</h2>
+  {% if story.tasks %}
+    <ul>{% for t in story.tasks %}
+      <li>[{% if t.done %}x{% else %} {% endif %}] {{ t.text|default:t }}</li>
+    {% endfor %}</ul>
+  {% else %}<p class="muted">None recorded.</p>{% endif %}
+
+  {% if story.dev_notes %}<h2>Dev notes</h2><div class="markdown card">{{ story.dev_notes|render_markdown }}</div>{% endif %}
+  {% if story.qa_results %}<h2>QA results</h2><pre>{{ story.qa_results|pretty_json }}</pre>{% endif %}
+{% endblock %}

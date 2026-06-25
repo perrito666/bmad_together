@@ -1,0 +1,29 @@
+{% load bmad_extras %}
+<div class="board">
+  {% for col in columns %}
+    <div class="col">
+      <h3>{{ col.label }} <span class="muted">({{ col.stories|length }})</span></h3>
+      {% for s in col.stories %}
+        <div class="story">
+          <div class="row">
+            <a href="{% url 'web:story_detail' s.id %}"><strong>{{ s.label }}</strong></a>
+            <span class="badge {{ s.status|status_class }}">{{ s.get_status_display }}</span>
+          </div>
+          <div>{{ s.title }}</div>
+          {% if s.assignee %}<div class="muted">@{{ s.assignee.username }}</div>{% endif %}
+          {% if can_write and s.allowed_transitions %}
+            <div class="row" style="margin-top:6px">
+              {% for t in s.allowed_transitions %}
+                <button hx-post="{% url 'web:story_transition' s.id %}"
+                        hx-vals='{"to": "{{ t }}"}'
+                        hx-target="#board" hx-swap="innerHTML">→ {{ t|cut:"_"|title }}</button>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% empty %}
+        <div class="muted" style="font-size:12px">—</div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>

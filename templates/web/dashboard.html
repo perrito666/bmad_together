@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · bmad_together{% endblock %}
+{% block content %}
+  <h1>{% if active_org %}{{ active_org.name }}{% else %}Dashboard{% endif %}</h1>
+  {% if not active_org %}
+    <p class="muted">You're not a member of any organization yet. Ask an admin for an
+      invitation, or create one in <a href="/admin/">admin</a>.</p>
+  {% elif not projects %}
+    <p class="muted">No projects in this organization yet. Create one via the
+      <a href="/api/docs/">API</a> or <a href="/admin/">admin</a>.</p>
+  {% else %}
+    <div class="grid">
+      {% for p in projects %}
+        <div class="card">
+          <h2 style="margin-top:0"><a href="{% url 'web:project_detail' p.id %}">{{ p.name }}</a></h2>
+          <p class="muted">{{ p.description|default:"No description"|truncatewords:20 }}</p>
+          <div class="row muted">
+            <span>{{ p.n_artifacts }} artifact{{ p.n_artifacts|pluralize }}</span>
+            <span>·</span>
+            <span>{{ p.n_epics }} epic{{ p.n_epics|pluralize }}</span>
+            <span>·</span>
+            <a href="{% url 'web:board' p.id %}">Board</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}

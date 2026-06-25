@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load bmad_extras %}
+{% block title %}{{ project.name }} · bmad_together{% endblock %}
+{% block content %}
+  <div class="crumbs"><a href="{% url 'web:dashboard' %}">Dashboard</a> / {{ project.name }}</div>
+  <div class="row">
+    <h1 style="margin:0">{{ project.name }}</h1>
+    <span class="spacer"></span>
+    <a class="badge" href="{% url 'web:board' project.id %}">Story board →</a>
+  </div>
+  {% if project.description %}<p class="muted">{{ project.description }}</p>{% endif %}
+
+  <h2>Artifacts</h2>
+  {% if artifacts_by_type %}
+    {% for type, items in artifacts_by_type.items %}
+      <div class="card" style="margin-bottom:10px">
+        <strong>{{ type }}</strong>
+        <ul style="margin:.4em 0">
+          {% for a in items %}
+            <li>
+              <a href="{% url 'web:artifact_detail' a.id %}">{{ a.title }}</a>
+              <span class="badge {{ a.status|status_class }}">{{ a.get_status_display }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="muted">No artifacts yet.</p>
+  {% endif %}
+
+  <h2>Epics</h2>
+  {% if epics %}
+    <table>
+      <thead><tr><th>#</th><th>Title</th><th>Status</th><th>Stories</th></tr></thead>
+      <tbody>
+        {% for e in epics %}
+          <tr><td>{{ e.number }}</td><td>{{ e.title }}</td>
+              <td>{{ e.status }}</td><td>{{ e.n }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="muted">No epics yet.</p>
+  {% endif %}
+{% endblock %}

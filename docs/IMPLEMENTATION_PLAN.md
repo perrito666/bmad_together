@@ -327,8 +327,10 @@ BMAD templates).
    serializers, role permissions, story `/transition/`, version list + `/diff/`,
    `next-story`, nested config/sprint-status/artifacts/epics/stories, JWT + PAT auth,
    OpenAPI schema, API tests.
-4. **Web UI** — dashboards, artifact CRUD + markdown render, version diff, story
-   kanban.
+4. **Web UI** ✅ — HTMX dashboard + org switcher, project detail (artifacts by type +
+   epics), artifact detail with sanitized markdown render + version history + unified
+   diff, markdown editor (snapshots a version), and a story kanban board with HTMX
+   status transitions.
 5. **Import/Export** — BMAD `docs/` round-trip + structured `data` schemas.
 6. **Plugin layer** — `bmadt` CLI client + generators for claude/codex/opencode/amp,
    API tokens, docs.

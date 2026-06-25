@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Board · {{ project.name }}{% endblock %}
+{% block content %}
+  <div class="crumbs">
+    <a href="{% url 'web:dashboard' %}">Dashboard</a> /
+    <a href="{% url 'web:project_detail' project.id %}">{{ project.name }}</a> / board
+  </div>
+  <h1>Story board</h1>
+  {% if not can_write %}<p class="muted">Read-only — you don't have write access to this organization.</p>{% endif %}
+  <div id="board">
+    {% include "web/partials/board_columns.html" %}
+  </div>
+{% endblock %}

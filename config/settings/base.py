@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "apps.projects",
     "apps.artifacts",
     "apps.workflow",
+    "apps.web",
 ]
 
 MIDDLEWARE = [
@@ -104,6 +105,9 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SITE_ID = 1
+LOGIN_URL = "account_login"
+LOGIN_REDIRECT_URL = "/"
+ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 
 # --- allauth ---
 ACCOUNT_LOGIN_METHODS = {"email"}

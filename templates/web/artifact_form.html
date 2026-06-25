@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Edit {{ artifact.title }} · bmad_together{% endblock %}
+{% block content %}
+  <div class="crumbs">
+    <a href="{% url 'web:artifact_detail' artifact.id %}">{{ artifact.title }}</a> / edit
+  </div>
+  <h1>Edit artifact</h1>
+  <form method="post" action="{% url 'web:artifact_edit' artifact.id %}">
+    {% csrf_token %}
+    <p><label>Title<br><input name="title" value="{{ artifact.title }}" style="width:100%"></label></p>
+    <p><label>Status<br>
+      <select name="status">
+        {% for value, label in statuses %}
+          <option value="{{ value }}" {% if value == artifact.status %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select></label></p>
+    <p><label>Body (markdown)<br>
+      <textarea name="body" rows="18" style="width:100%">{{ artifact.body }}</textarea></label></p>
+    <p><label>Change note<br><input name="message" placeholder="what changed" style="width:100%"></label></p>
+    <div class="row">
+      <button class="primary" type="submit">Save new version</button>
+      <a href="{% url 'web:artifact_detail' artifact.id %}">Cancel</a>
+    </div>
+  </form>
+{% endblock %}

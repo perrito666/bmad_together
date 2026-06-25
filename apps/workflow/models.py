@@ -111,6 +111,10 @@ class Story(UUIDModel, Versioned):
         tasks = self.tasks or []
         return all(t.get("done") for t in tasks) if tasks else True
 
+    @property
+    def allowed_transitions(self) -> list[str]:
+        return sorted(STORY_TRANSITIONS.get(self.status, set()))
+
     def can_transition_to(self, target: str) -> bool:
         return target in STORY_TRANSITIONS.get(self.status, set())
 

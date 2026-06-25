@@ -1,0 +1,15 @@
+{% load bmad_extras %}
+<div class="card" style="margin-top:10px">
+  <strong>Diff v{{ from }} → v{{ to }}</strong>
+  {% if body_diff %}
+    <h2 style="margin-top:.6em">body</h2>
+    <pre>{{ body_diff }}</pre>
+  {% endif %}
+  {% if data_diff %}
+    <h2>data</h2>
+    <pre>{{ data_diff }}</pre>
+  {% endif %}
+  {% if not body_diff and not data_diff %}
+    <p class="muted">No differences (or invalid version numbers).</p>
+  {% endif %}
+</div>

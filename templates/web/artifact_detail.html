@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load bmad_extras %}
+{% block title %}{{ artifact.title }} · bmad_together{% endblock %}
+{% block content %}
+  <div class="crumbs">
+    <a href="{% url 'web:dashboard' %}">Dashboard</a> /
+    <a href="{% url 'web:project_detail' artifact.project.id %}">{{ artifact.project.name }}</a> /
+    {{ artifact.title }}
+  </div>
+  <div class="row">
+    <h1 style="margin:0">{{ artifact.title }}</h1>
+    <span class="badge">{{ artifact.type }}</span>
+    <span class="badge {{ artifact.status|status_class }}">{{ artifact.get_status_display }}</span>
+    <span class="spacer"></span>
+    {% if can_write %}<a class="badge" href="{% url 'web:artifact_edit' artifact.id %}">Edit</a>{% endif %}
+  </div>
+
+  <div class="markdown card">{{ artifact.body|render_markdown }}</div>
+
+  {% if artifact.data %}
+    <h2>Structured data</h2>
+    <pre>{{ artifact.data|pretty_json }}</pre>
+  {% endif %}
+
+  <h2>Version history</h2>
+  {% if versions %}
+    <table>
+      <thead><tr><th>#</th><th>Message</th><th>Author</th><th>When</th></tr></thead>
+      <tbody>
+        {% for v in versions %}
+          <tr><td>{{ v.number }}</td><td>{{ v.message|default:"—" }}</td>
+              <td>{{ v.author.email|default:"—" }}</td><td class="muted">{{ v.created_at }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if versions|length > 1 %}
+      <form class="row" style="margin-top:10px"
+            hx-get="{% url 'web:artifact_diff' artifact.id %}" hx-target="#diff">
+        <label>Diff from <input type="number" name="from" value="1" min="1" style="width:70px"></label>
+        <label>to <input type="number" name="to" value="{{ versions.0.number }}" min="1" style="width:70px"></label>
+        <button>Compare</button>
+      </form>
+      <div id="diff"></div>
+    {% endif %}
+  {% else %}
+    <p class="muted">No versions recorded.</p>
+  {% endif %}
+{% endblock %}

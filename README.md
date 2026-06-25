@@ -11,7 +11,7 @@ after the fact**, scoped per user / team / organization.
 
 ## Status
 
-**Milestones 1–3 are in.**
+**Milestones 1–4 are in.**
 
 - **M1 — scaffold & accounts:** `accounts` app (orgs/teams/memberships/invitations/
   PATs), allauth (local + Google/GitHub SSO), JWT + PAT API auth, invite-acceptance
@@ -25,6 +25,10 @@ after the fact**, scoped per user / team / organization.
   stories with role-gated writes, the story `/transition/` state-machine endpoint,
   version history + unified `/diff/`, `next-story`, and nested config/sprint-status/
   artifacts/epics/stories routes. OpenAPI at `/api/docs/`.
+- **M4 — web UI (HTMX):** dashboard + org switcher, project detail (artifacts by
+  type + epics), artifact detail with sanitized markdown + version history + unified
+  diff, a markdown editor that snapshots a version, and a story kanban board with
+  inline HTMX status transitions. Sign in at `/accounts/login/`, app at `/`.
 
 Tests pass on Postgres and sqlite (`make test`).
 
