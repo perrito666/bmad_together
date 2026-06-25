@@ -14,10 +14,15 @@ after the fact**, scoped per user / team / organization.
 Planning. See:
 - **[docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)** — full design: domain
   model, data model, REST API, web UI, plugin layer, milestones, decisions.
+- **[docs/DATA_MODEL.md](docs/DATA_MODEL.md)** — ER diagram of the model graph and
+  tenant-scoping invariants.
 - **[docs/DATA_SCHEMAS.md](docs/DATA_SCHEMAS.md)** — structured `data` schema per
   artifact type, Story status state machine, BMAD `docs/` import/export mapping.
+- **[docs/API.md](docs/API.md)** — REST contract: endpoints, serializers,
+  permissions, errors.
 - **[docs/PLUGINS.md](docs/PLUGINS.md)** — the `bmadt` CLI and per-tool shims for
   Claude Code, Codex, OpenCode, and Amp.
+- **[docs/MILESTONE_1.md](docs/MILESTONE_1.md)** — turn-key scaffold checklist.
 
 ## At a glance
 

@@ -365,10 +365,16 @@ without reshaping the design):
 
 ## 12. Companion docs
 
+- **[DATA_MODEL.md](DATA_MODEL.md)** — ER diagram of the full model graph and the
+  tenant-scoping invariants.
 - **[DATA_SCHEMAS.md](DATA_SCHEMAS.md)** — the JSONB `data` shape per artifact type,
   the Story status state machine, and the BMAD `docs/` import/export mapping.
+- **[API.md](API.md)** — the REST contract: endpoints, serializer sketches,
+  permissions, pagination, and the error model.
 - **[PLUGINS.md](PLUGINS.md)** — the `bmadt` CLI command surface and the per-tool
   (Claude Code / Codex / OpenCode / Amp) file layouts.
+- **[MILESTONE_1.md](MILESTONE_1.md)** — turn-key task checklist for the scaffold
+  milestone, with acceptance criteria.
 
 ---
 
