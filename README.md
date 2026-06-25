@@ -11,9 +11,13 @@ after the fact**, scoped per user / team / organization.
 
 ## Status
 
-Planning. See **[docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)** for the
-full design: domain model, data model, REST API, web UI, and the per-tool plugin
-layer.
+Planning. See:
+- **[docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)** — full design: domain
+  model, data model, REST API, web UI, plugin layer, milestones, decisions.
+- **[docs/DATA_SCHEMAS.md](docs/DATA_SCHEMAS.md)** — structured `data` schema per
+  artifact type, Story status state machine, BMAD `docs/` import/export mapping.
+- **[docs/PLUGINS.md](docs/PLUGINS.md)** — the `bmadt` CLI and per-tool shims for
+  Claude Code, Codex, OpenCode, and Amp.
 
 ## At a glance
 

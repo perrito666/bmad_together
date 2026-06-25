@@ -347,15 +347,28 @@ Each milestone is a reviewable PR. v1 = milestones 1–6.
 - **Org model**: **invite-only** — no self-serve org creation; users join via
   `Invitation` acceptance.
 
-## 11. Open questions
+## 11. Resolved edges (v1 defaults)
 
-- Org provisioning: who creates organizations — platform staff via admin only, or a
-  gated "request an org" flow? (Assumed: staff/admin provisioning for v1.)
-- Invitation delivery: transactional email (which provider) vs shareable invite link.
-- SSO domain capture: auto-attach SSO sign-ups whose email domain matches an org, or
-  always require an explicit invite? (Assumed: always require invite.)
-- PAT scopes granularity: per-org / per-project / read-write split, or single
-  user-wide token for v1.
+These were the leftover narrow questions; resolved with defaults below (override later
+without reshaping the design):
+
+- **Org provisioning** → platform staff create orgs via Django admin (or a restricted
+  staff-only endpoint). No public "create org" in v1.
+- **Invitation delivery** → signed, expiring **invite link** (token in URL) shown in the
+  UI and emailable; pluggable email backend (console in dev, SMTP/provider in prod) so we
+  don't hard-depend on a vendor for v1.
+- **SSO domain capture** → off. SSO authenticates identity only; access still requires an
+  explicit `Invitation`.
+- **PAT scopes** → tokens are **user-wide read-write** in v1 (scoped to the user's
+  memberships), with an optional `scopes` field reserved on `APIToken` for future
+  per-project / read-only refinement.
+
+## 12. Companion docs
+
+- **[DATA_SCHEMAS.md](DATA_SCHEMAS.md)** — the JSONB `data` shape per artifact type,
+  the Story status state machine, and the BMAD `docs/` import/export mapping.
+- **[PLUGINS.md](PLUGINS.md)** — the `bmadt` CLI command surface and the per-tool
+  (Claude Code / Codex / OpenCode / Amp) file layouts.
 
 ---
 
