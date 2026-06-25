@@ -323,8 +323,10 @@ BMAD templates).
 2. **Domain** ✅ — Project/CoreConfig/SprintStatus, generic `Version` + `Versioned`
    mixin, Artifact (+ Attachment), Epic/Story with the validated status state machine,
    admin, factories, model tests.
-3. **REST API** — `TenantScopedViewSet`, serializers, permissions, transitions,
-   JWT + PAT auth classes, OpenAPI schema, API tests.
+3. **REST API** ✅ — `TenantScopedModelViewSet` over projects/artifacts/epics/stories,
+   serializers, role permissions, story `/transition/`, version list + `/diff/`,
+   `next-story`, nested config/sprint-status/artifacts/epics/stories, JWT + PAT auth,
+   OpenAPI schema, API tests.
 4. **Web UI** — dashboards, artifact CRUD + markdown render, version diff, story
    kanban.
 5. **Import/Export** — BMAD `docs/` round-trip + structured `data` schemas.
