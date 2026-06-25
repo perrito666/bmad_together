@@ -335,8 +335,10 @@ BMAD templates).
    core-config/sprint-status YAML, brief/prd/architecture/ux singletons, epics parsed
    from PRD headings or `epic-N.md`, and `{e}.{s}.story.md` stories with status; wired
    to `/projects/{id}/import|export/` (zip or JSON) + a web export link. Idempotent upsert.
-6. **Plugin layer** — `bmadt` CLI client + generators for claude/codex/opencode/amp,
-   API tokens, docs.
+6. **Plugin layer** ✅ — `bmadt` stdlib-only REST CLI (whoami/list/get/set/next-story/
+   create-story/import/export) reading `$BMADT_TOKEN`, plus an idempotent
+   `plugins.install` generator that vendors the CLI and writes per-tool shims for
+   Claude Code / Codex / OpenCode / Amp (managed `<!-- BMADT -->` blocks).
 7. **Polish** — search, activity feed, seed data, deployment, hardening.
 
 Each milestone is a reviewable PR. v1 = milestones 1–6.

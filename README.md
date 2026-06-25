@@ -11,7 +11,7 @@ after the fact**, scoped per user / team / organization.
 
 ## Status
 
-**Milestones 1–5 are in.**
+**Milestones 1–6 are in.**
 
 - **M1 — scaffold & accounts:** `accounts` app (orgs/teams/memberships/invitations/
   PATs), allauth (local + Google/GitHub SSO), JWT + PAT API auth, invite-acceptance
@@ -33,6 +33,10 @@ after the fact**, scoped per user / team / organization.
   YAML, brief/prd/architecture/ux, epics from PRD headings or `epic-N.md`, and
   `{e}.{s}.story.md` stories) and regenerate it on export — idempotent upsert, wired
   to `/projects/{id}/import|export/` (zip or JSON) plus a web export link.
+- **M6 — plugin layer:** the `bmadt` stdlib-only REST CLI (`whoami`, `list`, `get
+  story 2.3`, `set --status`, `next-story`, `import/export`) reading `$BMADT_TOKEN`,
+  and `python -m plugins.install --tool claude|codex|opencode|amp|all` which vendors
+  the CLI and writes idempotent per-tool shims. See [plugins/README.md](plugins/README.md).
 
 Tests pass on Postgres and sqlite (`make test`).
 

@@ -249,12 +249,21 @@ class StoryViewSet(TenantScopedModelViewSet):
     def get_queryset(self):
         qs = super().get_queryset()
         params = self.request.query_params
+        if project := params.get("project"):
+            qs = qs.filter(epic__project_id=project)
         if epic := params.get("epic"):
             qs = qs.filter(epic_id=epic)
         if assignee := params.get("assignee"):
             qs = qs.filter(assignee_id=assignee)
         if s := params.get("status"):
             qs = qs.filter(status=s)
+        if label := params.get("label"):
+            # "E.S" -> epic number E, story number S
+            try:
+                epic_no, story_no = (int(x) for x in label.split("."))
+                qs = qs.filter(epic__number=epic_no, number=story_no)
+            except (ValueError, TypeError):
+                qs = qs.none()
         return qs
 
     def perform_create(self, serializer):
