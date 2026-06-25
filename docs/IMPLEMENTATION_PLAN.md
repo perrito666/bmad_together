@@ -102,6 +102,8 @@ bmad_together/
 
 ### Tech stack
 - **Django 5**, **Django REST Framework**, **drf-spectacular** (OpenAPI).
+- **django-allauth** (local email/password + Google/GitHub SSO).
+- **djangorestframework-simplejwt** (interactive JWT) + a custom PAT model (CLI/automation).
 - **PostgreSQL** (JSONB structured fields, full-text search later).
 - **Django templates + HTMX** for the UI (+ a little Alpine.js for interactivity);
   `markdown` + bleach for safe rendering; `difflib`/diff rendering for versions.
@@ -125,10 +127,23 @@ Organization(name, slug, created_at)
 Team(organization FK, name, slug)
 Membership(user FK, organization FK, team FK?null, role)
     role ∈ {owner, admin, member, viewer}
+Invitation(organization FK, team FK?null, email, role,
+           invited_by FK, token, status, expires_at)
+    status ∈ {pending, accepted, revoked, expired}
+APIToken(user FK, name, prefix, hashed_key, scopes, last_used_at,
+         created_at, revoked_at?)       # personal access tokens for the CLI
 ```
+
+**Membership is invite-only.** There is no self-serve org creation in the app:
+organizations are provisioned by platform staff (Django admin / a restricted
+endpoint), and users join exclusively by accepting an `Invitation` (which creates
+their `Membership`). An org `owner`/`admin` can invite others to their org/team.
 
 Access rule: a user sees an artifact iff they share its `organization` (and, when
 the artifact is team-scoped, its `team`), with write gated by role.
+
+Authentication: **django-allauth** provides local email/password **and** Google /
+GitHub SSO. SSO sign-in still only grants access to orgs the user was invited to.
 
 ### 4.2 projects
 
@@ -201,9 +216,11 @@ the UI as breadcrumbs + a project graph view.
 
 ## 5. REST API (DRF)
 
-Versioned under `/api/v1/`. Token auth (DRF token or JWT) for tools; session auth
-for the web UI. **Object-level permissions** enforce org/team/owner scope on every
-queryset (a base `TenantScopedViewSet` filters by the requester's memberships).
+Versioned under `/api/v1/`. **Three auth paths**: session (web UI, via allauth),
+**JWT** (`simplejwt`) for interactive/programmatic API clients, and **personal
+access tokens** (`APIToken`, custom DRF auth class) for the `bmadt` CLI and
+unattended automation. **Object-level permissions** enforce org/team/owner scope on
+every queryset (a base `TenantScopedViewSet` filters by the requester's memberships).
 
 Endpoints (representative):
 
@@ -274,9 +291,10 @@ tool files — but pointed at bmad_together. This keeps tool-specific knowledge 
 place and reuses the single REST client.
 
 ### Auth for tools
-Per-user API tokens (revocable) issued from the web UI; scoped to the user's orgs.
-The CLI reads the token from an env var (e.g. `BMADT_TOKEN`) so it never lands in
-the repo.
+The CLI authenticates with a **personal access token** (`APIToken`) issued from the
+web UI — revocable, named, scoped to the user's orgs. The CLI reads it from an env
+var (e.g. `BMADT_TOKEN`) so it never lands in the repo. (Interactive API clients can
+alternatively use JWT, but PATs are the recommended path for unattended tools.)
 
 ---
 
@@ -299,11 +317,12 @@ BMAD templates).
 ## 9. Milestones
 
 1. **Scaffold** — Django project, settings split, Docker/Postgres, custom User,
-   Organization/Team/Membership, auth, admin. CI (ruff + pytest).
+   Organization/Team/Membership + Invitation + APIToken, django-allauth (local +
+   Google/GitHub SSO), invite-acceptance flow, admin. CI (ruff + pytest).
 2. **Domain** — Project/CoreConfig, Artifact + ArtifactVersion, Epic/Story models,
    admin, factories, model tests.
 3. **REST API** — `TenantScopedViewSet`, serializers, permissions, transitions,
-   OpenAPI schema, API tests.
+   JWT + PAT auth classes, OpenAPI schema, API tests.
 4. **Web UI** — dashboards, artifact CRUD + markdown render, version diff, story
    kanban.
 5. **Import/Export** — BMAD `docs/` round-trip + structured `data` schemas.
@@ -320,14 +339,23 @@ Each milestone is a reviewable PR. v1 = milestones 1–6.
 - **Plugin transport**: REST-only, per-tool generated scripts (no MCP).
 - **Web UI**: Django templates + HTMX.
 - **Tenancy**: shared DB with row-level org/team/owner scoping.
-- **Versioning**: immutable `ArtifactVersion` snapshot on every save.
+- **Versioning**: whole-document immutable `ArtifactVersion` snapshot on every save
+  (no per-field diff tracking in v1).
+- **Auth**: django-allauth — local email/password **plus** Google/GitHub SSO.
+- **API tokens**: **both** — personal access tokens for the `bmadt` CLI/automation,
+  JWT for interactive API clients.
+- **Org model**: **invite-only** — no self-serve org creation; users join via
+  `Invitation` acceptance.
 
 ## 11. Open questions
 
-- Auth provider: built-in Django auth only, or also SSO/OAuth (Google/GitHub) for orgs?
-- API token model: long-lived PATs vs short-lived JWT + refresh.
-- Do we need per-field (not just per-document) version diffs for PRDs?
-- Multi-org users: a single global login switching active org (assumed) vs invite-per-org.
+- Org provisioning: who creates organizations — platform staff via admin only, or a
+  gated "request an org" flow? (Assumed: staff/admin provisioning for v1.)
+- Invitation delivery: transactional email (which provider) vs shareable invite link.
+- SSO domain capture: auto-attach SSO sign-ups whose email domain matches an org, or
+  always require an explicit invite? (Assumed: always require invite.)
+- PAT scopes granularity: per-org / per-project / read-write split, or single
+  user-wide token for v1.
 
 ---
 
