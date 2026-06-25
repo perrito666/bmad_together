@@ -17,13 +17,17 @@ services:
 
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    # Dev server with autoreload; the image's entrypoint migrates first.
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.dev
       DATABASE_URL: postgres://bmad:bmad@db:5432/bmad
       SECRET_KEY: dev-insecure-change-me
       DEBUG: "true"
       ALLOWED_HOSTS: localhost,127.0.0.1,0.0.0.0
+      # Seed an admin so /admin/ is usable immediately (override in real use).
+      DJANGO_SUPERUSER_EMAIL: admin@example.com
+      DJANGO_SUPERUSER_PASSWORD: admin
     volumes:
       - .:/app
     ports:

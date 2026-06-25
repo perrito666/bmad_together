@@ -7,20 +7,24 @@ dependencies = [
     "django>=5.0,<5.2",
     "djangorestframework>=3.15",
     "drf-spectacular>=0.27",
-    "django-allauth>=0.61",
+    "django-allauth[socialaccount]>=0.61",
     "djangorestframework-simplejwt>=5.3",
     "psycopg[binary]>=3.1",
     "django-environ>=0.11",
     "gunicorn>=21.2",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "pytest-django>=4.8",
     "factory-boy>=3.3",
     "ruff>=0.4",
     "pre-commit>=3.7",
 ]
+
+[tool.uv]
+# Dev group is installed by default with `uv sync`; use `--no-dev` for prod images.
+default-groups = ["dev"]
 
 [tool.ruff]
 line-length = 100

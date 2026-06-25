@@ -16,25 +16,37 @@ after the fact**, scoped per user / team / organization.
 JWT + personal-access-token API auth, the invite-acceptance flow, tenant-scoping
 primitives, admin, and CI. Tests pass on Postgres and sqlite.
 
-## Development
+## Run it
+
+### Docker (zero setup)
+
+One command brings up Postgres + the app, runs migrations, and seeds an admin:
 
 ```bash
-# With Docker (recommended)
-cp .env.example .env
-make build && make up && make migrate
-make superuser            # create an admin to provision orgs
-
-# Or locally against your own Postgres
-python -m venv .venv && . .venv/bin/activate
-pip install -e ".[dev]"
-export DATABASE_URL=postgres://bmad:bmad@localhost:5432/bmad
-python manage.py migrate && python manage.py runserver
-
-make test                 # pytest (sqlite in-memory by default)
-make lint                 # ruff
+docker compose up --build      # or: make up
 ```
 
-API docs at `/api/docs/`, admin at `/admin/`.
+Then open:
+- App / API: http://localhost:8000
+- API docs (Swagger): http://localhost:8000/api/docs/
+- Admin: http://localhost:8000/admin/ — login `admin@example.com` / `admin`
+
+`docker compose down` stops it; `docker compose down -v` also wipes the database.
+
+### Local (uv)
+
+Dependencies are managed with [uv](https://docs.astral.sh/uv/) (`pyproject.toml` +
+`uv.lock`):
+
+```bash
+uv sync                                    # create .venv from the lockfile
+export DATABASE_URL=postgres://bmad:bmad@localhost:5432/bmad
+uv run python manage.py migrate
+uv run python manage.py runserver
+
+make test     # uv run pytest (sqlite in-memory unless DATABASE_URL is set)
+make lint     # uv run ruff check .
+```
 
 ## Planning docs
 
