@@ -11,10 +11,17 @@ after the fact**, scoped per user / team / organization.
 
 ## Status
 
-**Milestone 1 (scaffold & accounts) is in.** Django project + `accounts` app
-(orgs/teams/memberships/invitations/PATs), allauth (local + Google/GitHub SSO),
-JWT + personal-access-token API auth, the invite-acceptance flow, tenant-scoping
-primitives, admin, and CI. Tests pass on Postgres and sqlite.
+**Milestones 1–2 are in.**
+
+- **M1 — scaffold & accounts:** `accounts` app (orgs/teams/memberships/invitations/
+  PATs), allauth (local + Google/GitHub SSO), JWT + PAT API auth, invite-acceptance
+  flow, tenant-scoping primitives, admin, CI. uv-managed; one-command Docker startup.
+- **M2 — domain models:** `projects` (Project/CoreConfig/SprintStatus), `core`
+  (generic `Version` + `Versioned` mixin), `artifacts` (Artifact + Attachment), and
+  `workflow` (Epic/Story with a validated status state machine). Admin, factories,
+  model tests.
+
+Tests pass on Postgres and sqlite (`make test`).
 
 ## Run it
 

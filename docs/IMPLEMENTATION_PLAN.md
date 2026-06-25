@@ -316,10 +316,12 @@ BMAD templates).
 
 ## 9. Milestones
 
-1. **Scaffold** — Django project, settings split, Docker/Postgres, custom User,
+1. **Scaffold** ✅ — Django project, settings split, Docker/Postgres, custom User,
    Organization/Team/Membership + Invitation + APIToken, django-allauth (local +
-   Google/GitHub SSO), invite-acceptance flow, admin. CI (ruff + pytest).
-2. **Domain** — Project/CoreConfig, Artifact + ArtifactVersion, Epic/Story models,
+   Google/GitHub SSO), invite-acceptance flow, admin. CI (ruff + pytest). _(uv-managed;
+   one-command Docker startup.)_
+2. **Domain** ✅ — Project/CoreConfig/SprintStatus, generic `Version` + `Versioned`
+   mixin, Artifact (+ Attachment), Epic/Story with the validated status state machine,
    admin, factories, model tests.
 3. **REST API** — `TenantScopedViewSet`, serializers, permissions, transitions,
    JWT + PAT auth classes, OpenAPI schema, API tests.

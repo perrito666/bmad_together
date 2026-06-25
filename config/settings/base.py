@@ -38,6 +38,10 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.github",
     # Local
     "apps.accounts",
+    "apps.core",
+    "apps.projects",
+    "apps.artifacts",
+    "apps.workflow",
 ]
 
 MIDDLEWARE = [
