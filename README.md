@@ -11,7 +11,7 @@ after the fact**, scoped per user / team / organization.
 
 ## Status
 
-**Milestones 1–6 are in.**
+**All seven milestones are in — v1 is complete.**
 
 - **M1 — scaffold & accounts:** `accounts` app (orgs/teams/memberships/invitations/
   PATs), allauth (local + Google/GitHub SSO), JWT + PAT API auth, invite-acceptance
@@ -37,6 +37,9 @@ after the fact**, scoped per user / team / organization.
   story 2.3`, `set --status`, `next-story`, `import/export`) reading `$BMADT_TOKEN`,
   and `python -m plugins.install --tool claude|codex|opencode|amp|all` which vendors
   the CLI and writes idempotent per-tool shims. See [plugins/README.md](plugins/README.md).
+- **M7 — polish:** clean OpenAPI schema (0 warnings), `?q=` search on stories/epics,
+  an idempotent `python manage.py seed_demo` (set `DJANGO_SEED_DEMO=true` to auto-run
+  it in Docker), and a `/healthz` probe used by the container healthcheck.
 
 Tests pass on Postgres and sqlite (`make test`).
 

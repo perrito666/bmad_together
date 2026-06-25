@@ -3,8 +3,9 @@ from __future__ import annotations
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import connection
 from django.db.models import Count
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
@@ -71,6 +72,16 @@ def _nav(request, **extra):
 
 
 # --- views ---
+
+def healthz(request):
+    """Public liveness/readiness probe: 200 only if the DB is reachable."""
+    try:
+        with connection.cursor() as cur:
+            cur.execute("SELECT 1")
+        return JsonResponse({"status": "ok"})
+    except Exception:  # noqa: BLE001 - any DB error means not ready
+        return JsonResponse({"status": "error"}, status=503)
+
 
 @login_required
 def dashboard(request):

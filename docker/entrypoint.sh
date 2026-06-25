@@ -27,6 +27,12 @@ else:
 "
 fi
 
+# Optionally seed a demo org/project/backlog (handy for first-run local use).
+if [ "${DJANGO_SEED_DEMO:-}" = "true" ]; then
+  echo "[entrypoint] seeding demo data…"
+  python manage.py seed_demo || true
+fi
+
 # Collect static only when running the production (gunicorn) command.
 if [ "${1:-}" = "gunicorn" ]; then
   echo "[entrypoint] collecting static files…"

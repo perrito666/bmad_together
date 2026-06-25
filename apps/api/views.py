@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -29,6 +30,7 @@ from .serializers import (
 
 
 class MeView(APIView):
+    @extend_schema(responses=MeSerializer)
     def get(self, request):
         user = request.user
         data = {
@@ -51,6 +53,7 @@ class APITokenViewSet(
     """Manage the caller's personal access tokens. DELETE revokes (soft)."""
 
     serializer_class = APITokenSerializer
+    queryset = APIToken.objects.all()  # narrowed per-user in get_queryset()
 
     def get_queryset(self):
         return APIToken.objects.filter(user=self.request.user).order_by("-created_at")
@@ -141,6 +144,7 @@ class OrganizationViewSet(
 class InvitationAcceptView(APIView):
     permission_classes = [AllowAny]  # token in URL is the credential; user must be authed
 
+    @extend_schema(request=None, responses=MembershipSerializer)
     def post(self, request, token):
         if not request.user.is_authenticated:
             return Response(

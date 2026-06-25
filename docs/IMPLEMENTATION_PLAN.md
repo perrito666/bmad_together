@@ -339,7 +339,10 @@ BMAD templates).
    create-story/import/export) reading `$BMADT_TOKEN`, plus an idempotent
    `plugins.install` generator that vendors the CLI and writes per-tool shims for
    Claude Code / Codex / OpenCode / Amp (managed `<!-- BMADT -->` blocks).
-7. **Polish** — search, activity feed, seed data, deployment, hardening.
+7. **Polish** ✅ — clean OpenAPI schema (PAT auth extension + per-action annotations,
+   0 warnings/errors), `?q=` title search on stories/epics, an idempotent `seed_demo`
+   management command (optionally auto-run in Docker), and a public `/healthz` probe
+   wired to the container healthcheck.
 
 Each milestone is a reviewable PR. v1 = milestones 1–6.
 

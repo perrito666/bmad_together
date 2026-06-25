@@ -5,6 +5,7 @@ from . import views
 app_name = "web"
 
 urlpatterns = [
+    path("healthz", views.healthz, name="healthz"),
     path("", views.dashboard, name="dashboard"),
     path("set-org/", views.set_org, name="set_org"),
     path("projects/<uuid:pk>/", views.project_detail, name="project_detail"),

@@ -7,6 +7,9 @@ import json
 import zipfile
 
 from django.http import HttpResponse
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, inline_serializer
+from rest_framework import serializers as drf_serializers
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied, ValidationError
@@ -69,6 +72,7 @@ class ProjectViewSet(TenantScopedModelViewSet):
         SprintStatus.objects.get_or_create(project=project)
 
     # --- nested config / sprint-status ---
+    @extend_schema(responses=CoreConfigSerializer)
     @action(detail=True, methods=["get", "put"])
     def config(self, request, pk=None):
         project = self.get_object()
@@ -80,6 +84,7 @@ class ProjectViewSet(TenantScopedModelViewSet):
             return Response(ser.data)
         return Response(CoreConfigSerializer(cfg).data)
 
+    @extend_schema(responses=SprintStatusSerializer)
     @action(detail=True, methods=["get"], url_path="sprint-status")
     def sprint_status(self, request, pk=None):
         project = self.get_object()
@@ -87,6 +92,7 @@ class ProjectViewSet(TenantScopedModelViewSet):
         return Response(SprintStatusSerializer(sprint).data)
 
     # --- nested artifacts / epics ---
+    @extend_schema(request=ArtifactSerializer, responses=ArtifactSerializer)
     @action(detail=True, methods=["get", "post"])
     def artifacts(self, request, pk=None):
         project = self.get_object()
@@ -104,6 +110,7 @@ class ProjectViewSet(TenantScopedModelViewSet):
         artifact.snapshot(author=request.user, message="created")
         return Response(ArtifactSerializer(artifact).data, status=status.HTTP_201_CREATED)
 
+    @extend_schema(request=EpicSerializer, responses=EpicSerializer)
     @action(detail=True, methods=["get", "post"])
     def epics(self, request, pk=None):
         project = self.get_object()
@@ -116,6 +123,12 @@ class ProjectViewSet(TenantScopedModelViewSet):
         return Response(ser.data, status=status.HTTP_201_CREATED)
 
     # --- BMAD docs/ round-trip ---
+    @extend_schema(
+        request=inline_serializer(
+            "ImportRequest", {"files": drf_serializers.DictField(child=drf_serializers.CharField())}
+        ),
+        responses=OpenApiTypes.OBJECT,
+    )
     @action(detail=True, methods=["post"], url_path="import")
     def import_docs(self, request, pk=None):
         from apps.projects.bmad_io import import_tree
@@ -131,6 +144,7 @@ class ProjectViewSet(TenantScopedModelViewSet):
         summary = import_tree(project, files, author=request.user)
         return Response(summary.as_dict())
 
+    @extend_schema(responses=OpenApiTypes.BINARY)
     @action(detail=True, methods=["get"], url_path="export")
     def export_docs(self, request, pk=None):
         from apps.projects.bmad_io import export_tree
@@ -147,6 +161,7 @@ class ProjectViewSet(TenantScopedModelViewSet):
         resp["Content-Disposition"] = f'attachment; filename="{project.slug}-bmad-docs.zip"'
         return resp
 
+    @extend_schema(request=None, responses=StorySerializer)
     @action(detail=True, methods=["post"], url_path="next-story")
     def next_story(self, request, pk=None):
         """The next story to pick up: first non-done story in epic/story order."""
@@ -190,10 +205,12 @@ class ArtifactViewSet(TenantScopedModelViewSet):
         artifact = serializer.save()
         artifact.snapshot(author=self.request.user, message="updated")
 
+    @extend_schema(responses=VersionSerializer(many=True))
     @action(detail=True, methods=["get"])
     def versions(self, request, pk=None):
         return self._paginated(self.get_object().versions.all(), VersionSerializer)
 
+    @extend_schema(operation_id="artifact_version_detail", responses=VersionDetailSerializer)
     @action(detail=True, methods=["get"], url_path=r"versions/(?P<number>\d+)")
     def version_at(self, request, pk=None, number=None):
         version = self.get_object().versions.filter(number=number).first()
@@ -201,6 +218,7 @@ class ArtifactViewSet(TenantScopedModelViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(VersionDetailSerializer(version).data)
 
+    @extend_schema(responses=OpenApiTypes.OBJECT)
     @action(detail=True, methods=["get"])
     def diff(self, request, pk=None):
         obj = self.get_object()
@@ -221,6 +239,8 @@ class EpicViewSet(TenantScopedModelViewSet):
         qs = super().get_queryset()
         if project := self.request.query_params.get("project"):
             qs = qs.filter(project_id=project)
+        if q := self.request.query_params.get("q"):
+            qs = qs.filter(title__icontains=q)
         return qs
 
     def perform_create(self, serializer):
@@ -228,6 +248,7 @@ class EpicViewSet(TenantScopedModelViewSet):
         self.require_role(project.organization_id, Role.MEMBER)
         serializer.save(created_by=self.request.user, number=_next_number(project.epics.all()))
 
+    @extend_schema(request=StorySerializer, responses=StorySerializer)
     @action(detail=True, methods=["get", "post"])
     def stories(self, request, pk=None):
         epic = self.get_object()
@@ -257,6 +278,8 @@ class StoryViewSet(TenantScopedModelViewSet):
             qs = qs.filter(assignee_id=assignee)
         if s := params.get("status"):
             qs = qs.filter(status=s)
+        if q := params.get("q"):
+            qs = qs.filter(title__icontains=q)
         if label := params.get("label"):
             # "E.S" -> epic number E, story number S
             try:
@@ -278,6 +301,7 @@ class StoryViewSet(TenantScopedModelViewSet):
         story = serializer.save()
         story.snapshot(author=self.request.user, message="updated")
 
+    @extend_schema(request=StoryTransitionSerializer, responses=StorySerializer)
     @action(detail=True, methods=["post"])
     def transition(self, request, pk=None):
         story = self.get_object()
@@ -292,6 +316,7 @@ class StoryViewSet(TenantScopedModelViewSet):
             )
         return Response(StorySerializer(story).data)
 
+    @extend_schema(responses=VersionSerializer(many=True))
     @action(detail=True, methods=["get"])
     def versions(self, request, pk=None):
         return self._paginated(self.get_object().versions.all(), VersionSerializer)
