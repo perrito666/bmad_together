@@ -47,6 +47,7 @@ dependencies = [
     { name = "gunicorn" },
     { name = "markdown" },
     { name = "psycopg", extra = ["binary"] },
+    { name = "pyyaml" },
 ]
 
 [package.dev-dependencies]
@@ -69,6 +70,7 @@ requires-dist = [
     { name = "gunicorn", specifier = ">=21.2" },
     { name = "markdown", specifier = ">=3.6" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.1" },
+    { name = "pyyaml", specifier = ">=6.0" },
 ]
 
 [package.metadata.requires-dev]

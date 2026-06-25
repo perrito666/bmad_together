@@ -2,8 +2,11 @@
 from __future__ import annotations
 
 import difflib
+import io
 import json
+import zipfile
 
+from django.http import HttpResponse
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied, ValidationError
@@ -111,6 +114,38 @@ class ProjectViewSet(TenantScopedModelViewSet):
         ser.is_valid(raise_exception=True)
         ser.save(created_by=request.user, number=_next_number(project.epics.all()))
         return Response(ser.data, status=status.HTTP_201_CREATED)
+
+    # --- BMAD docs/ round-trip ---
+    @action(detail=True, methods=["post"], url_path="import")
+    def import_docs(self, request, pk=None):
+        from apps.projects.bmad_io import import_tree
+
+        project = self.get_object()
+        self.require_role(project.organization_id, Role.MEMBER)
+        if "file" in request.FILES:
+            files = _unzip(request.FILES["file"].read())
+        elif isinstance(request.data.get("files"), dict):
+            files = request.data["files"]
+        else:
+            raise ValidationError("Provide a 'file' (zip upload) or a 'files' mapping.")
+        summary = import_tree(project, files, author=request.user)
+        return Response(summary.as_dict())
+
+    @action(detail=True, methods=["get"], url_path="export")
+    def export_docs(self, request, pk=None):
+        from apps.projects.bmad_io import export_tree
+
+        project = self.get_object()
+        files = export_tree(project)
+        if request.query_params.get("format") == "json":
+            return Response({"files": files})
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            for path, content in files.items():
+                zf.writestr(path, content)
+        resp = HttpResponse(buf.getvalue(), content_type="application/zip")
+        resp["Content-Disposition"] = f'attachment; filename="{project.slug}-bmad-docs.zip"'
+        return resp
 
     @action(detail=True, methods=["post"], url_path="next-story")
     def next_story(self, request, pk=None):
@@ -254,6 +289,17 @@ class StoryViewSet(TenantScopedModelViewSet):
 
 
 # --- helpers ---
+
+def _unzip(blob: bytes) -> dict:
+    """Decode a zip archive into a ``{path: text}`` mapping (text files only)."""
+    files = {}
+    with zipfile.ZipFile(io.BytesIO(blob)) as zf:
+        for info in zf.infolist():
+            if info.is_dir():
+                continue
+            files[info.filename] = zf.read(info.filename).decode("utf-8", "replace")
+    return files
+
 
 def _next_number(queryset) -> int:
     from django.db.models import Max

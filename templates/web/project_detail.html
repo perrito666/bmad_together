@@ -6,6 +6,7 @@
   <div class="row">
     <h1 style="margin:0">{{ project.name }}</h1>
     <span class="spacer"></span>
+    <a class="badge" href="/api/v1/projects/{{ project.id }}/export/">Export docs ↓</a>
     <a class="badge" href="{% url 'web:board' project.id %}">Story board →</a>
   </div>
   {% if project.description %}<p class="muted">{{ project.description }}</p>{% endif %}

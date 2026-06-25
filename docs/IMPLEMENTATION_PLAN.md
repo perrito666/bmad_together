@@ -331,7 +331,10 @@ BMAD templates).
    epics), artifact detail with sanitized markdown render + version history + unified
    diff, markdown editor (snapshots a version), and a story kanban board with HTMX
    status transitions.
-5. **Import/Export** — BMAD `docs/` round-trip + structured `data` schemas.
+5. **Import/Export** ✅ — BMAD `docs/` round-trip (`import_tree`/`export_tree`):
+   core-config/sprint-status YAML, brief/prd/architecture/ux singletons, epics parsed
+   from PRD headings or `epic-N.md`, and `{e}.{s}.story.md` stories with status; wired
+   to `/projects/{id}/import|export/` (zip or JSON) + a web export link. Idempotent upsert.
 6. **Plugin layer** — `bmadt` CLI client + generators for claude/codex/opencode/amp,
    API tokens, docs.
 7. **Polish** — search, activity feed, seed data, deployment, hardening.

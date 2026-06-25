@@ -11,7 +11,7 @@ after the fact**, scoped per user / team / organization.
 
 ## Status
 
-**Milestones 1–4 are in.**
+**Milestones 1–5 are in.**
 
 - **M1 — scaffold & accounts:** `accounts` app (orgs/teams/memberships/invitations/
   PATs), allauth (local + Google/GitHub SSO), JWT + PAT API auth, invite-acceptance
@@ -29,6 +29,10 @@ after the fact**, scoped per user / team / organization.
   type + epics), artifact detail with sanitized markdown + version history + unified
   diff, a markdown editor that snapshots a version, and a story kanban board with
   inline HTMX status transitions. Sign in at `/accounts/login/`, app at `/`.
+- **M5 — BMAD `docs/` round-trip:** import a `docs/` tree (core-config/sprint-status
+  YAML, brief/prd/architecture/ux, epics from PRD headings or `epic-N.md`, and
+  `{e}.{s}.story.md` stories) and regenerate it on export — idempotent upsert, wired
+  to `/projects/{id}/import|export/` (zip or JSON) plus a web export link.
 
 Tests pass on Postgres and sqlite (`make test`).
 
