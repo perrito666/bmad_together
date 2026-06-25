@@ -1,5 +1,13 @@
 # Milestone 1 — Scaffold & Accounts (turn-key checklist)
 
+> **Status: implemented.** Project skeleton, dev/test/prod settings split, Docker
+> Compose + Dockerfile + Makefile, the `accounts` app (User/Org/Team/Membership/
+> Invitation/APIToken), allauth (local + Google/GitHub), JWT + PAT auth, the
+> invite-acceptance flow, scoping primitives, admin, GitHub Actions CI, and the
+> accounts test suite are all in. Verified: migrations apply on Postgres and the
+> suite is green on both Postgres and sqlite. Remaining polish: tighten the
+> drf-spectacular schema warnings and add a SessionStart hook (both optional).
+
 Goal: a running Django project with Postgres, the `accounts` app (orgs/teams/
 memberships/invitations/PATs), allauth auth (local + SSO), the invite-acceptance flow,
 admin, and green CI. This is the foundation milestone 2+ build on.

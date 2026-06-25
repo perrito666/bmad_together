@@ -11,7 +11,34 @@ after the fact**, scoped per user / team / organization.
 
 ## Status
 
-Planning. See:
+**Milestone 1 (scaffold & accounts) is in.** Django project + `accounts` app
+(orgs/teams/memberships/invitations/PATs), allauth (local + Google/GitHub SSO),
+JWT + personal-access-token API auth, the invite-acceptance flow, tenant-scoping
+primitives, admin, and CI. Tests pass on Postgres and sqlite.
+
+## Development
+
+```bash
+# With Docker (recommended)
+cp .env.example .env
+make build && make up && make migrate
+make superuser            # create an admin to provision orgs
+
+# Or locally against your own Postgres
+python -m venv .venv && . .venv/bin/activate
+pip install -e ".[dev]"
+export DATABASE_URL=postgres://bmad:bmad@localhost:5432/bmad
+python manage.py migrate && python manage.py runserver
+
+make test                 # pytest (sqlite in-memory by default)
+make lint                 # ruff
+```
+
+API docs at `/api/docs/`, admin at `/admin/`.
+
+## Planning docs
+
+See:
 - **[docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)** — full design: domain
   model, data model, REST API, web UI, plugin layer, milestones, decisions.
 - **[docs/DATA_MODEL.md](docs/DATA_MODEL.md)** — ER diagram of the model graph and

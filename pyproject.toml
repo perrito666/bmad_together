@@ -1,0 +1,36 @@
+[project]
+name = "bmad-together"
+version = "0.1.0"
+description = "Multi-tenant platform for BMAD artifacts: REST API, web UI, and per-tool plugins."
+requires-python = ">=3.11"
+dependencies = [
+    "django>=5.0,<5.2",
+    "djangorestframework>=3.15",
+    "drf-spectacular>=0.27",
+    "django-allauth>=0.61",
+    "djangorestframework-simplejwt>=5.3",
+    "psycopg[binary]>=3.1",
+    "django-environ>=0.11",
+    "gunicorn>=21.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest-django>=4.8",
+    "factory-boy>=3.3",
+    "ruff>=0.4",
+    "pre-commit>=3.7",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["migrations"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "DJ"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+python_files = ["test_*.py", "tests.py"]
+addopts = "-q"
